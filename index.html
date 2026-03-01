@@ -353,7 +353,7 @@ button{cursor:pointer;font-family:var(--font-b);}
   text-shadow:0 2px 12px rgba(0,0,0,.8);
 }
 .model-card.wide .card-name{font-size:2.9rem;}
-@media(max-width:420px){.card-name{font-size:1.6rem;} .model-card.wide .card-name{font-size:2rem;}}
+@media(max-width:420px){.card-name{font-size:1.4rem;} .model-card.wide .card-name{font-size:1.8rem;} .card-bottom{padding:1rem .8rem .8rem;} .card-tagline{display:none;} .card-prices{display:none;}}
 
 .card-tagline{
   font-family:var(--font-s); font-style:italic;
@@ -387,9 +387,10 @@ button{cursor:pointer;font-family:var(--font-b);}
 }
 .model-card:hover .card-actions{opacity:1; transform:translateY(0); pointer-events:auto;}
 
-/* always show on touch */
+/* On mobile: show only view button, hide wa/tg icon buttons (too small to tap accurately) */
 @media(hover:none){
   .card-actions{opacity:1 !important; transform:translateY(0) !important; pointer-events:auto !important;}
+  .card-wa, .card-tg{display:none !important;}
 }
 
 .card-btn-view{
@@ -412,6 +413,30 @@ button{cursor:pointer;font-family:var(--font-b);}
 .empty-state{
   grid-column:1/-1; text-align:center; padding:5rem 2rem;
   color:var(--dim); font-size:.85rem; letter-spacing:.2em; text-transform:uppercase;
+}
+
+
+/* ─── MOBILE FILTER TOGGLE ─── */
+.filter-toggle-btn{
+  display:none;
+  align-items:center; gap:.5rem;
+  padding:.42rem 1rem;
+  background:transparent; border:2px solid var(--border2);
+  color:var(--text); font-size:.72rem; font-weight:500; letter-spacing:.18em; text-transform:uppercase;
+  font-family:var(--font-b); cursor:pointer; transition:all .22s;
+}
+.filter-toggle-btn:hover{border-color:var(--red3);}
+.filters-collapsible{display:flex; gap:.5rem; align-items:center; flex-wrap:wrap;}
+@media(max-width:640px){
+  .filter-toggle-btn{display:flex;}
+  .filters-collapsible{
+    display:none; width:100%; padding-top:.8rem;
+    border-top:1px solid var(--border); margin-top:.5rem;
+    flex-wrap:wrap; gap:.45rem;
+  }
+  .filters-collapsible.open{display:flex;}
+  .filters-wrap{flex-wrap:wrap;}
+  .filters-wrap .count-label{font-size:.7rem;}
 }
 
 /* ─── BOTTOM CONTACT BAR ─────────────────────── */
@@ -491,14 +516,20 @@ button{cursor:pointer;font-family:var(--font-b);}
 
 <!-- FILTERS -->
 <div class="filters-wrap">
-  <div class="filters-left">
-    <span class="filter-label">Filter:</span>
-    <button class="filter-btn active" data-filter="all">All</button>
-    <button class="filter-btn" data-filter="available">Available Now</button>
-    <button class="filter-btn" data-filter="vip">VIP</button>
-    <button class="filter-btn" data-filter="new">New</button>
-    <button class="filter-btn" data-filter="hot">Hot</button>
-    <button class="filter-btn hide-sm" data-filter="exclusive">Exclusive</button>
+  <div class="filters-left" style="flex:1;min-width:0;display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;">
+    <span class="filter-label" style="flex-shrink:0">Filter:</span>
+    <button class="filter-toggle-btn" id="filter-toggle" onclick="toggleFilters()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg>
+      Filters <span id="filter-indicator"></span>
+    </button>
+    <div class="filters-collapsible" id="filters-collapsible">
+      <button class="filter-btn active" data-filter="all">All</button>
+      <button class="filter-btn" data-filter="available">Available Now</button>
+      <button class="filter-btn" data-filter="vip">VIP</button>
+      <button class="filter-btn" data-filter="new">New</button>
+      <button class="filter-btn" data-filter="hot">Hot</button>
+      <button class="filter-btn" data-filter="exclusive">Exclusive</button>
+    </div>
   </div>
   <span class="count-label" id="model-count"></span>
 </div>
@@ -526,11 +557,6 @@ button{cursor:pointer;font-family:var(--font-b);}
   </div>
 </div>
 
-<!-- FLOAT CTA -->
-<div class="float-cta">
-  <a href="#" class="float-btn float-btn-tg" id="float-tg"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg> Telegram</a>
-  <a href="#" class="float-btn float-btn-wa" id="float-wa"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg> WhatsApp</a>
-</div>
 
 <!-- SCROLL TO TOP -->
 <button class="scroll-top" id="scroll-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
@@ -596,6 +622,14 @@ const ICON_WA = `<svg width="16" height="16" viewBox="0 0 24 24" fill="currentCo
 const ICON_TG = `<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>`;
 </script>
 <script>
+
+function toggleFilters(){
+  const el=document.getElementById('filters-collapsible');
+  const btn=document.getElementById('filter-toggle');
+  el.classList.toggle('open');
+  btn.style.borderColor = el.classList.contains('open') ? 'var(--red3)' : '';
+}
+
 let currentFilter='all';
 
 function init(){
