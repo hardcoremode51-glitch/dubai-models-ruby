@@ -784,7 +784,7 @@ function buildCard(m,i) {
   var bg=m.photos&&m.photos[0]?"background-image:url('"+m.photos[0]+"')":"";
   var waNum=(m.wa||cfg.wa).replace(/[^0-9]/g,''), tgUser=(m.tg||cfg.tg).replace('@','');
   var cls=i===0?' wide':'';
-  return '<div class="model-card'+cls+'" onclick="location.href=\'profile.html?id=\'+m.id+\'\'">'
+  return '<div class="model-card'+cls+'" onclick="location.href=\'profile.html?id=' + m.id + '\'">'
     +'<div class="card-bg" style="'+bg+'"></div>'
     +'<div class="card-ph"><svg width="80" height="80" viewBox="0 0 24 24" fill="white"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg></div>'
     +'<div class="card-vignette"></div>'
@@ -796,7 +796,7 @@ function buildCard(m,i) {
     +'<div class="card-meta"><span>'+m.age+' yrs</span><span>'+m.height+' cm</span><span>'+m.nationality+'</span></div>'
     +'<div><span class="price-pill">1h — '+(m.price1h||0)+' AED</span><span class="price-pill">2h — '+(m.price2h||0)+' AED</span></div>'
     +'<div class="card-actions">'
-    +'<button class="card-view-btn" onclick="event.stopPropagation();location.href=\'profile.html?id=\'+m.id+\'\'\">View Profile</button>'
+    +'<button class="card-view-btn" onclick="event.stopPropagation();location.href=\'profile.html?id=' + m.id + '\'\">View Profile</button>'
     +'<a class="card-icon-btn card-iwa" href="https://wa.me/'+waNum+'" onclick="event.stopPropagation()" target="_blank">'+WA_ICO+'</a>'
     +'<a class="card-icon-btn card-itg" href="https://t.me/'+tgUser+'" onclick="event.stopPropagation()" target="_blank">'+TG_ICO+'</a>'
     +'</div></div></div>';
