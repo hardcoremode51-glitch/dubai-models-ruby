@@ -669,7 +669,7 @@ function saveFavs(f)   { localStorage.setItem(DB_FAVS,JSON.stringify(f)); }
 function getConfig()   { const d=localStorage.getItem(DB_CFG);    return d?Object.assign({},DEFAULT_CONFIG,JSON.parse(d)):Object.assign({},DEFAULT_CONFIG); }
 function saveConfig(c) { localStorage.setItem(DB_CFG,JSON.stringify(c)); }
 
-function initData() { saveModels(DEMO_MODELS); }
+function initData() { if(!getModels()) saveModels(DEMO_MODELS); }
 
 function toggleFav(id) {
   let f=getFavs(); const i=f.indexOf(id);
