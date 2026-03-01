@@ -2,10 +2,12 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 <meta name="theme-color" content="#060306">
 <title>Favourites — RUBY AGENCY</title>
-<style>/* ============================================================
+<style>
+
+/* ============================================================
    RUBY AGENCY — Shared Styles v2
    High contrast · Dark cinematic · Ruby red + black + gold
    ============================================================ */
@@ -218,7 +220,11 @@ button{cursor:pointer;font-family:var(--font-b);}
 .scroll-top.visible{opacity:1; transform:translateY(0); pointer-events:auto;}
 .scroll-top:hover{background:var(--red2);}
 
-
+/* ─── FLOAT CTA BUTTONS ──────────────────────── */
+.float-cta{
+  position:fixed; bottom:1.8rem; left:1.8rem; z-index:399;
+  display:flex; flex-direction:column; gap:.55rem;
+}
 .float-btn{
   display:flex; align-items:center; gap:.6rem;
   padding:.72rem 1.25rem; border:2px solid;
@@ -245,16 +251,388 @@ button{cursor:pointer;font-family:var(--font-b);}
   .scroll-top{bottom:1rem; right:1rem;}
 }
 
-@media(max-width:640px){
-  .nav{height:58px !important;padding:0 1rem !important;}
-  .nav-logo{font-size:1.3rem !important;gap:.5rem !important;}
-  .nav-links{gap:.8rem !important;}
-  .nav-links a{font-size:.68rem !important;}
-  .nav-right .btn-tg{display:none !important;}
-  .nav-right .btn-wa{padding:.4rem .75rem !important;font-size:.62rem !important;}
+
+/* ══ PAGE STYLES ══════════════════════════════════════ */
+
+/* TOP BAR — hidden on mobile */
+.top-bar{
+  background:var(--black2); border-bottom:2px solid var(--border2);
+  padding:.5rem 2.5rem;
+  display:flex; justify-content:space-between; align-items:center; gap:1rem;
 }
-</style>
-<style>
+.top-bar-text{font-size:.68rem;font-weight:500;letter-spacing:.25em;color:var(--dim);text-transform:uppercase;}
+.top-bar-cta{display:flex;gap:.5rem;}
+@media(max-width:640px){.top-bar{display:none;}}
+
+/* NAV overrides */
+.nav-right .btn-wa,
+.nav-right .btn-tg{font-size:.68rem;padding:.46rem .95rem;}
+@media(max-width:640px){
+  .nav{height:58px;padding:0 1rem;}
+  .nav-logo{font-size:1.3rem;gap:.5rem;}
+  .nav-links{gap:.9rem;}
+  .nav-links a{font-size:.68rem;}
+  .nav-right .btn-tg{display:none;}
+  .nav-right .btn-wa{padding:.4rem .75rem;font-size:.62rem;}
+}
+
+/* ── FILTERS ─────────────────────────────────── */
+.filters-bar{
+  position:sticky; top:68px; z-index:100;
+  background:rgba(6,3,6,.97); backdrop-filter:blur(14px);
+  border-bottom:2px solid var(--border);
+  padding:.9rem 2.5rem;
+  display:flex; align-items:center; justify-content:space-between; gap:.8rem;
+  flex-wrap:nowrap;
+}
+@media(max-width:640px){
+  .filters-bar{top:58px; padding:.7rem 1rem; flex-wrap:wrap; gap:.5rem;}
+}
+
+.filter-scroll{
+  display:flex; align-items:center; gap:.45rem;
+  overflow-x:auto; -webkit-overflow-scrolling:touch;
+  scrollbar-width:none; flex:1; min-width:0;
+}
+.filter-scroll::-webkit-scrollbar{display:none;}
+
+.filter-label{
+  font-size:.62rem;font-weight:500;letter-spacing:.28em;
+  color:var(--dim2);text-transform:uppercase;white-space:nowrap;flex-shrink:0;
+}
+.filter-btn{
+  white-space:nowrap; flex-shrink:0;
+  padding:.4rem .95rem;
+  background:transparent; border:2px solid rgba(212,33,60,.35);
+  color:var(--dim); font-size:.66rem;font-weight:500;letter-spacing:.16em;text-transform:uppercase;
+  transition:all .2s; font-family:var(--font-b);
+}
+.filter-btn:hover{border-color:var(--red3);color:var(--text);}
+.filter-btn.active{border-color:var(--red3);color:var(--white);background:rgba(212,33,60,.2);}
+
+.count-badge{
+  font-size:.65rem;font-weight:500;letter-spacing:.18em;color:var(--gold);
+  white-space:nowrap;flex-shrink:0;
+}
+
+/* ── DESKTOP GRID (≥821px) ───────────────────── */
+.models-grid{
+  padding:1.5rem 2.5rem 5rem;
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:2px;
+}
+@media(max-width:1200px){.models-grid{grid-template-columns:repeat(3,1fr);}}
+@media(max-width:820px){.models-grid{grid-template-columns:repeat(2,1fr);padding:1rem 1rem 4rem;}}
+
+/* ── DESKTOP CARD ────────────────────────────── */
+.model-card{
+  position:relative;overflow:hidden;aspect-ratio:2/3;cursor:pointer;
+  background:var(--black3);
+}
+.model-card.wide{grid-column:span 2;aspect-ratio:auto;min-height:520px;}
+@media(max-width:820px){.model-card.wide{grid-column:span 2;min-height:360px;}}
+
+.card-bg{
+  position:absolute;inset:0;
+  transition:transform .65s cubic-bezier(.25,.46,.45,.94);
+  background:linear-gradient(155deg,#200810 0%,#3a0f1e 55%,#120408 100%);
+}
+.card-bg.has-photo{background-size:cover!important;background-position:center top!important;}
+.model-card:hover .card-bg{transform:scale(1.07);}
+
+.card-vignette{
+  position:absolute;inset:0;
+  background:
+    linear-gradient(0deg,rgba(6,3,6,.98) 0%,rgba(6,3,6,.7) 30%,rgba(6,3,6,.2) 55%,transparent 100%),
+    radial-gradient(ellipse at 50% 100%,rgba(6,3,6,.45) 0%,transparent 55%);
+}
+.card-icon{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;}
+.card-icon svg{opacity:.07;}
+
+.card-top{position:absolute;top:1rem;left:1rem;right:1rem;display:flex;justify-content:space-between;align-items:flex-start;gap:.5rem;}
+.card-tags{display:flex;gap:.4rem;flex-wrap:wrap;align-items:center;}
+.card-fav{
+  background:rgba(6,3,6,.7);border:2px solid rgba(255,255,255,.25);
+  width:36px;height:36px;display:flex;align-items:center;justify-content:center;
+  font-size:1rem;color:rgba(255,255,255,.5);transition:all .22s;flex-shrink:0;
+}
+.card-fav:hover,.card-fav.active{color:#f43f5e;border-color:rgba(244,63,94,.7);background:rgba(244,63,94,.18);}
+
+.card-bottom{position:absolute;bottom:0;left:0;right:0;padding:1.5rem 1.2rem 1.2rem;}
+.card-name{
+  font-family:var(--font-d);font-size:2.1rem;letter-spacing:.06em;line-height:1;
+  color:var(--white);margin-bottom:.3rem;text-shadow:0 2px 12px rgba(0,0,0,.8);
+}
+.model-card.wide .card-name{font-size:2.9rem;}
+.card-tagline{
+  font-family:var(--font-s);font-style:italic;
+  font-size:.88rem;color:var(--off);margin-bottom:.65rem;line-height:1.4;
+  text-shadow:0 1px 8px rgba(0,0,0,.9);
+}
+.card-meta{
+  display:flex;gap:.8rem;flex-wrap:wrap;
+  font-size:.68rem;font-weight:500;letter-spacing:.14em;color:var(--text);
+  text-transform:uppercase;margin-bottom:.75rem;
+}
+.card-prices{
+  display:flex;gap:.45rem;flex-wrap:wrap;margin-bottom:.8rem;
+}
+.price-pill{
+  padding:.26rem .75rem;
+  border:2px solid rgba(212,168,67,.6);background:rgba(212,168,67,.12);
+  font-size:.65rem;font-weight:500;letter-spacing:.1em;color:var(--gold2);
+}
+
+/* hover actions — desktop only */
+.card-actions{
+  display:flex;gap:.5rem;flex-wrap:wrap;
+  opacity:0;transform:translateY(10px);
+  transition:opacity .28s,transform .28s;pointer-events:none;
+}
+.model-card:hover .card-actions{opacity:1;transform:translateY(0);pointer-events:auto;}
+
+.card-btn-view{
+  padding:.5rem 1.2rem;background:var(--red);border:2px solid var(--red);
+  color:var(--white);font-size:.67rem;font-weight:500;letter-spacing:.18em;text-transform:uppercase;
+  font-family:var(--font-b);transition:background .2s;
+}
+.card-btn-view:hover{background:var(--red2);}
+.card-wa,.card-tg{
+  width:36px;height:36px;display:flex;align-items:center;justify-content:center;
+  border:2px solid;transition:all .2s;flex-shrink:0;
+}
+.card-wa{border-color:rgba(37,211,102,.7);color:var(--wa);background:rgba(37,211,102,.12);}
+.card-wa:hover{background:rgba(37,211,102,.28);}
+.card-tg{border-color:rgba(42,171,238,.7);color:var(--tg);background:rgba(42,171,238,.12);}
+.card-tg:hover{background:rgba(42,171,238,.28);}
+
+/* ── MOBILE LIST (≤640px) ────────────────────── */
+@media(max-width:640px){
+  .models-grid{
+    display:flex !important;
+    flex-direction:column;
+    padding:.8rem .8rem 4rem;
+    gap:0;
+  }
+  /* reset all grid card styles */
+  .model-card,
+  .model-card.wide{
+    position:relative;
+    aspect-ratio:auto !important;
+    min-height:auto !important;
+    grid-column:auto !important;
+    width:100%;
+    margin-bottom:1px;
+    overflow:hidden;
+    cursor:pointer;
+  }
+  /* tall photo */
+  .card-bg{
+    position:relative !important;
+    width:100%;
+    height:72vw;
+    min-height:260px;
+    max-height:420px;
+    display:block;
+  }
+  /* reset absolute layers */
+  .card-vignette{
+    position:absolute;
+    inset:auto;
+    bottom:0;left:0;right:0;
+    height:55%;
+    background:linear-gradient(0deg,rgba(6,3,6,1) 0%,rgba(6,3,6,.6) 60%,transparent 100%);
+    top:auto;
+  }
+  .card-icon{display:none;}
+  .card-top{
+    position:absolute;
+    top:.85rem;left:.85rem;right:.85rem;
+    z-index:3;
+  }
+  .card-bottom{
+    position:relative !important;
+    background:var(--black3);
+    border-top:2px solid var(--border);
+    padding:1.1rem 1rem 1rem;
+    z-index:2;
+  }
+  .card-name{font-size:1.7rem;margin-bottom:.2rem;}
+  .card-tagline{font-size:.82rem;margin-bottom:.5rem;}
+  .card-meta{font-size:.65rem;gap:.6rem;margin-bottom:.5rem;}
+  .card-prices{margin-bottom:.8rem;}
+  /* always-visible action row on mobile — only View Profile button */
+  .card-actions{
+    opacity:1 !important;
+    transform:none !important;
+    pointer-events:auto !important;
+    display:flex;
+    gap:.5rem;
+  }
+  .card-wa,.card-tg{display:none !important;}
+  .card-btn-view{
+    width:100%;
+    padding:.65rem;
+    font-size:.72rem;
+    text-align:center;
+    justify-content:center;
+  }
+}
+
+/* ── EMPTY ───────────────────────────────────── */
+.empty-state{
+  grid-column:1/-1;text-align:center;padding:5rem 2rem;
+  color:var(--dim);font-size:.85rem;letter-spacing:.2em;text-transform:uppercase;
+}
+
+/* ── CONTACT FOOTER ──────────────────────────── */
+.contact-footer{
+  padding:1.8rem 2.5rem;background:var(--black2);border-top:2px solid var(--border2);
+  display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1.2rem;
+}
+.cf-item{display:flex;flex-direction:column;gap:.3rem;}
+.cf-label{font-size:.62rem;font-weight:500;letter-spacing:.28em;color:var(--dim2);text-transform:uppercase;}
+.cf-val{font-size:.88rem;font-weight:500;color:var(--text);}
+.cf-btns{display:flex;gap:.6rem;flex-wrap:wrap;}
+@media(max-width:640px){
+  .contact-footer{padding:1.2rem 1rem;}
+  .cf-item{display:none;}
+}
+
+
+/* ═══ NAVBAR ═══════════════════════════════════════════════════ */
+.nav {
+  position: fixed !important;
+  top: 0; left: 0; right: 0;
+  z-index: 900;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2.2rem;
+  background: rgba(6,3,6,.98);
+  border-bottom: 2px solid var(--border2);
+  box-shadow: 0 2px 24px rgba(212,33,60,.14);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+.nav-spacer { height: 64px; flex-shrink: 0; }
+
+.nav-logo {
+  display: flex; align-items: center; gap: .6rem;
+  font-family: var(--font-d); font-size: 1.5rem; letter-spacing: .18em;
+  color: var(--white); text-decoration: none; flex-shrink: 0;
+  transition: opacity .2s;
+}
+.nav-logo:hover { opacity: .85; }
+.nav-logo-text span { color: var(--red3); }
+
+/* desktop links */
+.nav-center {
+  display: flex; align-items: center; gap: 1.8rem;
+}
+.nav-center a {
+  font-size: .72rem; font-weight: 500; letter-spacing: .2em;
+  text-transform: uppercase; color: var(--dim);
+  text-decoration: none; transition: color .2s; white-space: nowrap;
+}
+.nav-center a:hover, .nav-center a.active { color: var(--white); }
+.nav-center a.active { border-bottom: 2px solid var(--red); padding-bottom: 2px; }
+
+/* right side */
+.nav-right-desktop {
+  display: flex; align-items: center; gap: .6rem;
+}
+.nav-right-desktop .btn-wa,
+.nav-right-desktop .btn-tg {
+  font-size: .66rem; padding: .44rem .9rem;
+}
+
+/* ── BURGER (mobile only) ──────────── */
+.nav-burger {
+  display: none;
+  flex-direction: column; justify-content: center; align-items: center;
+  gap: 5px; width: 40px; height: 40px;
+  background: transparent; border: 2px solid var(--border2);
+  cursor: pointer; transition: border-color .2s; flex-shrink: 0;
+}
+.nav-burger:hover { border-color: var(--red); }
+.nav-burger span {
+  display: block; width: 20px; height: 2px;
+  background: var(--text); transition: all .28s ease;
+  transform-origin: center;
+}
+.nav-burger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.nav-burger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+.nav-burger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+/* fav counter pill */
+.fav-count-pill {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 18px; height: 18px; padding: 0 4px;
+  background: var(--red); border-radius: 9px;
+  font-size: .58rem; font-weight: 500; color: var(--white);
+  margin-left: .3rem; vertical-align: middle;
+}
+
+/* ── MOBILE DRAWER ──────────────────── */
+.nav-drawer {
+  display: none;
+  position: fixed; top: 64px; left: 0; right: 0; bottom: 0;
+  z-index: 850;
+  background: rgba(6,3,6,.98);
+  border-top: 2px solid var(--border);
+  padding: 1.8rem 1.5rem 2rem;
+  flex-direction: column;
+  gap: 0;
+  overflow-y: auto;
+  transform: translateY(-8px);
+  opacity: 0;
+  transition: opacity .25s ease, transform .25s ease;
+  pointer-events: none;
+}
+.nav-drawer.open {
+  display: flex;
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+.drawer-link {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 1.1rem; font-family: var(--font-d); letter-spacing: .12em;
+  color: var(--text); text-decoration: none; transition: color .2s;
+}
+.drawer-link:hover, .drawer-link.active { color: var(--white); }
+.drawer-link.active { color: var(--red3); }
+.drawer-contact {
+  margin-top: 1.8rem;
+  display: flex; flex-direction: column; gap: .8rem;
+}
+.drawer-contact .btn-wa,
+.drawer-contact .btn-tg {
+  display: flex; align-items: center; justify-content: center;
+  gap: .6rem; padding: 1rem; font-size: .78rem; font-weight: 500;
+}
+.drawer-label {
+  font-size: .6rem; font-weight: 500; letter-spacing: .3em;
+  color: var(--dim2); text-transform: uppercase; margin-top: .8rem;
+}
+
+/* ── RESPONSIVE BREAKPOINT ──────────── */
+@media (max-width: 700px) {
+  .nav { padding: 0 1rem; }
+  .nav-center { display: none; }
+  .nav-right-desktop { display: none; }
+  .nav-burger { display: flex; }
+}
+@media (min-width: 701px) {
+  .nav-drawer { display: none !important; }
+}
+
+
 .fav-header{padding:2.5rem 2.5rem 1.8rem;border-bottom:2px solid var(--border2);display:flex;justify-content:space-between;align-items:flex-end;gap:1rem;flex-wrap:wrap;}
 .fav-title{font-family:var(--font-d);font-size:clamp(2.5rem,6vw,4.5rem);letter-spacing:.06em;line-height:1;color:var(--white);}
 .fav-title span{color:var(--red3);}
@@ -297,6 +675,21 @@ button{cursor:pointer;font-family:var(--font-b);}
 .empty-icon{font-size:3.5rem;opacity:.25;color:var(--red);}
 .empty-text{font-size:.85rem;font-weight:500;letter-spacing:.22em;color:var(--dim);text-transform:uppercase;}
 .empty-sub{font-family:var(--font-s);font-style:italic;font-size:1rem;color:var(--dim2);}
+
+/* mobile cards same as index */
+@media(max-width:640px) {
+  .models-grid { display:flex !important; flex-direction:column; padding:.6rem .6rem 4rem; gap:0; }
+  .model-card { aspect-ratio:auto !important; min-height:auto !important; width:100%; margin-bottom:1px; border-bottom:1px solid var(--border); }
+  .card-bg { position:relative !important; width:100%; height:70vw; min-height:240px; max-height:400px; display:block; }
+  .card-vignette { position:absolute; inset:auto; bottom:0; left:0; right:0; height:60%; top:auto; background:linear-gradient(0deg,rgba(6,3,6,1) 0%,rgba(6,3,6,.5) 65%,transparent 100%); }
+  .card-icon { display:none; }
+  .card-top { position:absolute; top:.75rem; left:.75rem; right:.75rem; z-index:3; }
+  .card-bottom { position:relative !important; background:var(--black3); padding:1rem .9rem .9rem; z-index:2; }
+  .card-name { font-size:1.65rem; }
+  .card-actions { opacity:1 !important; transform:none !important; pointer-events:auto !important; }
+  .card-wa,.card-tg { display:none !important; }
+  .card-btn-view { width:100%; padding:.65rem; font-size:.72rem; text-align:center; justify-content:center; }
+}
 </style>
 </head>
 <body>
@@ -305,32 +698,57 @@ button{cursor:pointer;font-family:var(--font-b);}
   <div class="loader-name">RUBY AGENCY</div>
   <div class="loader-bar"></div>
 </div>
-
-<nav class="nav">
+<nav class="nav" id="main-nav">
   <a href="index.html" class="nav-logo">
-    <svg class="ruby-gem" width="30" height="30" viewBox="0 0 54 54" fill="none"><polygon points="27,4 50,18 50,36 27,50 4,36 4,18" fill="#9b1535" stroke="#d4213c" stroke-width="1.5"/><polygon points="27,4 50,18 27,28" fill="#c41e3a" opacity=".9"/><polygon points="27,4 4,18 27,28" fill="#7a1028" opacity=".9"/><polygon points="50,18 50,36 27,28" fill="#e03050" opacity=".8"/><polygon points="4,18 4,36 27,28" fill="#6b0d20" opacity=".85"/><polygon points="50,36 27,50 27,28" fill="#b01830" opacity=".9"/><polygon points="4,36 27,50 27,28" fill="#8a1228" opacity=".9"/><polygon points="27,4 38,11 27,16" fill="white" opacity=".2"/></svg>
+    <svg width="28" height="28" viewBox="0 0 54 54" fill="none"><polygon points="27,4 50,18 50,36 27,50 4,36 4,18" fill="#9b1535" stroke="#d4213c" stroke-width="1.5"/><polygon points="27,4 50,18 27,28" fill="#c41e3a" opacity=".9"/><polygon points="27,4 4,18 27,28" fill="#7a1028" opacity=".9"/><polygon points="50,18 50,36 27,28" fill="#e03050" opacity=".8"/><polygon points="4,18 4,36 27,28" fill="#6b0d20" opacity=".85"/><polygon points="50,36 27,50 27,28" fill="#b01830" opacity=".9"/><polygon points="4,36 27,50 27,28" fill="#8a1228" opacity=".9"/><polygon points="27,4 38,11 27,16" fill="white" opacity=".2"/></svg>
     <span class="nav-logo-text">RUBY <span>AGENCY</span></span>
   </a>
-  <div class="nav-links">
-    <a href="index.html">Models</a>
-    <a href="favorites.html" class="active">Favourites <span id="fav-badge"></span></a>
-    <a href="admin.html" class="hide-sm">Admin</a>
+
+  <!-- Desktop center links -->
+  <div class="nav-center">
+    <a href="index.html" class="">Models</a>
+    <a href="favorites.html" class="active">Favourites<span class="fav-count-pill" id="fav-badge" style="display:none">0</span></a>
+    <a href="admin.html">Admin</a>
   </div>
-  <div class="nav-right">
+
+  <!-- Desktop right CTA -->
+  <div class="nav-right-desktop">
     <a href="#" class="btn-wa" id="nav-wa"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg> WhatsApp</a>
     <a href="#" class="btn-tg" id="nav-tg"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg> Telegram</a>
   </div>
-</nav>
-<div style="height:68px"></div>
 
-<div class="fav-header">
+  <!-- Mobile burger -->
+  <div style="display:flex;align-items:center;gap:.7rem;">
+    <a href="favorites.html" class="nav-logo" style="font-size:.8rem;letter-spacing:.1em;gap:.3rem;" id="mob-fav-link">
+      ♡ <span id="mob-fav-badge"></span>
+    </a>
+    <button class="nav-burger" id="nav-burger" onclick="toggleDrawer()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+<div class="nav-spacer"></div>
+
+<!-- Mobile drawer -->
+<div class="nav-drawer" id="nav-drawer">
+  <a href="index.html" class="drawer-link ">Models</a>
+  <a href="favorites.html" class="drawer-link active">Favourites</a>
+  <a href="admin.html" class="drawer-link ">Admin</a>
+  <div class="drawer-label">Contact Us</div>
+  <div class="drawer-contact">
+    <a href="#" class="btn-wa" id="drawer-wa"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg> WhatsApp</a>
+    <a href="#" class="btn-tg" id="drawer-tg"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg> Telegram</a>
+  </div>
+</div>
+
+<div style="padding:2.5rem 2.2rem 1.8rem;border-bottom:2px solid var(--border2);display:flex;justify-content:space-between;align-items:flex-end;gap:1rem;flex-wrap:wrap;">
   <div>
-    <h1 class="fav-title">YOUR <span>SELECTION</span></h1>
-    <div class="fav-sub">Saved models for easy access</div>
+    <h1 style="font-family:var(--font-d);font-size:clamp(2.5rem,6vw,4.5rem);letter-spacing:.06em;line-height:1;color:var(--white);">YOUR <span style="color:var(--red3)">SELECTION</span></h1>
+    <div style="font-family:var(--font-s);font-style:italic;font-size:1rem;color:var(--dim);margin-top:.4rem;">Saved models for easy access</div>
   </div>
   <div style="display:flex;gap:.8rem;align-items:center;flex-wrap:wrap;">
-    <span class="fav-count" id="fav-count-lbl"></span>
-    <button class="clear-btn" id="clear-btn" onclick="clearAll()" style="display:none">Clear All</button>
+    <span style="font-size:.72rem;font-weight:500;letter-spacing:.28em;color:var(--gold);text-transform:uppercase;" id="fav-count-lbl"></span>
+    <button style="padding:.42rem 1rem;background:transparent;border:2px solid rgba(244,63,94,.45);color:#f87171;font-size:.68rem;font-weight:500;letter-spacing:.18em;text-transform:uppercase;font-family:var(--font-b);transition:all .22s;cursor:pointer;" id="clear-btn" onclick="clearAll()" style="display:none">Clear All</button>
   </div>
 </div>
 
@@ -338,7 +756,9 @@ button{cursor:pointer;font-family:var(--font-b);}
 
 <button class="scroll-top" id="scroll-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
 
-<script>// ============================================================
+<script>
+
+// ============================================================
 //  RUBY AGENCY — Shared Data Layer
 // ============================================================
 const DB_MODELS = 'ruby_models';
@@ -397,39 +817,88 @@ function staggerIn(sel,delay=60){
 // SVG icons
 const ICON_WA = `<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>`;
 const ICON_TG = `<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>`;
-</script>
-<script>
-function init(){
-  initData(); injectNav();
-  const cfg=getConfig();
-  const _nw=document.getElementById('nav-wa'); if(_nw) _nw.href=waLink;
-  const _nt=document.getElementById('nav-tg'); if(_nt) _nt.href=tgLink;
-  const btn=document.getElementById('scroll-top');
-  window.addEventListener('scroll',()=>btn.classList.toggle('visible',window.scrollY>300));
-  render();
-  setTimeout(()=>document.getElementById('page-loader').classList.add('hidden'),900);
+
+
+
+function initNav() {
+  const cfg = getConfig();
+  // inject contact links
+  ['nav-wa','drawer-wa'].forEach(id => { const e=document.getElementById(id); if(e) e.href=cfg.waLink; });
+  ['nav-tg','drawer-tg'].forEach(id => { const e=document.getElementById(id); if(e) e.href=cfg.tgLink; });
+  // fav badges
+  updateAllFavBadges();
 }
-function render(){
+function updateAllFavBadges() {
+  const n = getFavs().length;
+  const pill = document.getElementById('fav-badge');
+  if (pill) { pill.textContent = n; pill.style.display = n > 0 ? 'inline-flex' : 'none'; }
+  const mob = document.getElementById('mob-fav-badge');
+  if (mob) mob.textContent = n > 0 ? `(${n})` : '';
+  const ml = document.getElementById('mob-fav-link');
+  if (ml) ml.style.color = n > 0 ? 'var(--gold)' : 'var(--dim)';
+}
+function toggleDrawer() {
+  const drawer = document.getElementById('nav-drawer');
+  const burger = document.getElementById('nav-burger');
+  const isOpen = drawer.classList.contains('open');
+  drawer.classList.toggle('open', !isOpen);
+  burger.classList.toggle('open', !isOpen);
+  document.body.style.overflow = isOpen ? '' : 'hidden';
+}
+// close drawer on outside click
+document.addEventListener('click', e => {
+  const drawer = document.getElementById('nav-drawer');
+  const burger = document.getElementById('nav-burger');
+  if (drawer && drawer.classList.contains('open')) {
+    if (!drawer.contains(e.target) && !burger.contains(e.target)) {
+      drawer.classList.remove('open');
+      burger.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+  }
+});
+
+
+function initScrollTop() {
+  const btn = document.getElementById('scroll-top');
+  if (!btn) return;
+  window.addEventListener('scroll', () => btn.classList.toggle('visible', window.scrollY > 350));
+}
+
+
+const WA_ICO=`<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>`, TG_ICO=`<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>`;
+
+function init() {
+  initData();
+  initNav();
+  initScrollTop();
+  render();
+  setTimeout(()=>document.getElementById('page-loader').classList.add('hidden'),800);
+}
+
+function render() {
   const favIds=getFavs();
   const all=getModels()||[];
   const favMs=all.filter(m=>favIds.includes(m.id));
   const cfg=getConfig();
-  const badge=document.getElementById('fav-badge');
+
   const lbl=document.getElementById('fav-count-lbl');
   const cb=document.getElementById('clear-btn');
-  if(badge) badge.textContent=favIds.length?`(${favIds.length})`:'';
   if(lbl) lbl.textContent=`${favIds.length} saved`;
-  if(cb) cb.style.display=favIds.length?'block':'none';
+  if(cb) cb.style.display=favIds.length?'inline-block':'none';
+  updateAllFavBadges();
+
   const grid=document.getElementById('fav-grid');
-  if(!favMs.length){
-    grid.innerHTML=`<div class="empty-state">
-      <div class="empty-icon">♡</div>
-      <div class="empty-text">No favourites yet</div>
-      <div class="empty-sub">Browse our models and click ♡ to save them here</div>
+  if(!favMs.length) {
+    grid.innerHTML=`<div style="grid-column:1/-1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.5rem;padding:5rem 2rem;text-align:center;">
+      <div style="font-size:3rem;opacity:.2;color:var(--red)">♡</div>
+      <div style="font-size:.85rem;font-weight:500;letter-spacing:.22em;color:var(--dim);text-transform:uppercase;">No favourites yet</div>
+      <div style="font-family:var(--font-s);font-style:italic;font-size:1rem;color:var(--dim2);">Browse our models and click ♡ to save them here</div>
       <a href="index.html" class="btn-primary" style="margin-top:.5rem">Browse Models</a>
     </div>`;
     return;
   }
+
   grid.innerHTML=favMs.map(m=>{
     const waNum=(m.wa||cfg.wa).replace(/[^0-9]/g,'');
     const tgUser=(m.tg||cfg.tg).replace('@','');
@@ -437,7 +906,6 @@ function render(){
     const hasCls=m.photos&&m.photos[0]?'has-photo':'';
     const tag=m.tag?`<span class="chip chip-${m.tag}">${m.tag.toUpperCase()}</span>`:'';
     const avail=m.available?`<span class="avail-dot">Available</span>`:'';
-    const p1=m.price1h||m.p1||0; const p2=m.price2h||m.p2||0;
     return `<div class="model-card" onclick="window.location='profile.html?id=${m.id}'">
       <div class="card-bg ${hasCls}" style="${bgStyle}"></div>
       <div class="card-icon"><svg width="90" height="90" viewBox="0 0 24 24" fill="white"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg></div>
@@ -450,18 +918,21 @@ function render(){
         <div class="card-name">${m.name.toUpperCase()}</div>
         <div class="card-tagline">${m.tagline||''}</div>
         <div class="card-meta"><span>${m.age} yrs</span><span>${m.height} cm</span><span>${m.nationality}</span></div>
+        <div><span class="price-pill">1h — ${m.price1h||0} AED</span></div>
         <div class="card-actions">
           <button class="card-btn-view" onclick="event.stopPropagation();window.location='profile.html?id=${m.id}'">View Profile</button>
-          <a class="card-wa" href="https://wa.me/${waNum}" onclick="event.stopPropagation()" target="_blank"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg></a>
-          <a class="card-tg" href="https://t.me/${tgUser}" onclick="event.stopPropagation()" target="_blank"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg></a>
+          <a class="card-wa" href="https://wa.me/${waNum}" onclick="event.stopPropagation()" target="_blank">${WA_ICO}</a>
+          <a class="card-tg" href="https://t.me/${tgUser}" onclick="event.stopPropagation()" target="_blank">${TG_ICO}</a>
         </div>
       </div>
     </div>`;
   }).join('');
   staggerIn('.model-card',50);
 }
-function removeFav(id){toggleFav(id);render();}
-function clearAll(){if(!confirm('Remove all favourites?'))return;saveFavs([]);render();}
+
+function removeFav(id) { toggleFav(id); render(); }
+function clearAll() { if(!confirm('Remove all favourites?'))return; saveFavs([]); render(); }
+
 init();
 </script>
 </body>
