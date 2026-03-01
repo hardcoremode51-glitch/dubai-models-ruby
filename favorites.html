@@ -690,6 +690,30 @@ button{cursor:pointer;font-family:var(--font-b);}
   .card-wa,.card-tg { display:none !important; }
   .card-btn-view { width:100%; padding:.65rem; font-size:.72rem; text-align:center; justify-content:center; }
 }
+
+/* safe-area notch fix — applied to all pages */
+.nav {
+  padding-top: env(safe-area-inset-top) !important;
+  height: calc(64px + env(safe-area-inset-top)) !important;
+  top: 0 !important;
+  position: fixed !important;
+}
+.nav-spacer {
+  height: calc(64px + env(safe-area-inset-top)) !important;
+}
+.nav-drawer {
+  top: calc(64px + env(safe-area-inset-top)) !important;
+}
+/* mob fav icon */
+#mob-fav-link {
+  font-size: 1.4rem !important;
+  padding: .3rem !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: .25rem !important;
+}
+#mob-fav-badge { font-size: .75rem !important; color: var(--gold) !important; }
+
 </style>
 </head>
 <body>
