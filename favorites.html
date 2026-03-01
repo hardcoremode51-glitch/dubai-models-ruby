@@ -723,7 +723,7 @@ function render(){
     var bg=m.photos&&m.photos[0]?"background-image:url('"+m.photos[0]+"')":'';
     var tag=m.tag?'<span class="chip chip-'+m.tag+'">'+m.tag.toUpperCase()+'</span>':'';
     var avail=m.available?'<span class="avail-dot">Available</span>':'';
-    return '<div class="model-card" onclick="location.href=\'profile.html?id=\'+m.id+\'\'">'
+    return '<div class="model-card" onclick="location.href=\'profile.html?id=' + m.id + '\'">'
       +'<div class="card-bg" style="'+bg+'"></div>'
       +'<div class="card-ph"><svg width="80" height="80" viewBox="0 0 24 24" fill="white"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg></div>'
       +'<div class="card-vignette"></div>'
@@ -734,7 +734,7 @@ function render(){
       +'<div class="card-tagline">'+(m.tagline||'')+'</div>'
       +'<div class="card-meta"><span>'+m.age+' yrs</span><span>'+m.height+' cm</span><span>'+m.nationality+'</span></div>'
       +'<div><span class="price-pill">1h — '+(m.price1h||0)+' AED</span></div>'
-      +'<button class="card-view-btn" onclick="event.stopPropagation();location.href=\'profile.html?id=\'+m.id+\'\'\">View Profile</button>'
+      +'<button class="card-view-btn" onclick="event.stopPropagation();location.href=\'profile.html?id=' + m.id + '\'\">View Profile</button>'
       +'</div></div>';
   }).join('');
   staggerIn('.model-card',50);
