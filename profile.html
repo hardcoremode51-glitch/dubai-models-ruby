@@ -385,6 +385,54 @@ button{cursor:pointer;font-family:var(--font-b);}
   .nav-drawer { display: none !important; }
 }
 
+
+/* safe-area notch fix — applied to all pages */
+.nav {
+  padding-top: env(safe-area-inset-top) !important;
+  height: calc(64px + env(safe-area-inset-top)) !important;
+  top: 0 !important;
+  position: fixed !important;
+}
+.nav-spacer {
+  height: calc(64px + env(safe-area-inset-top)) !important;
+}
+.nav-drawer {
+  top: calc(64px + env(safe-area-inset-top)) !important;
+}
+/* mob fav icon */
+#mob-fav-link {
+  font-size: 1.4rem !important;
+  padding: .3rem !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: .25rem !important;
+}
+#mob-fav-badge { font-size: .75rem !important; color: var(--gold) !important; }
+
+@media(max-width:900px) {
+  .photo-panel {
+    position: relative !important;
+    height: 0 !important;
+    padding-bottom: 177.78% !important;
+    max-height: none !important;
+    overflow: hidden !important;
+  }
+  .main-photo {
+    position: absolute !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    object-position: center top !important;
+  }
+  .photo-placeholder {
+    position: absolute !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+  }
+}
+
 </style>
 <style>
 .profile-wrap{
