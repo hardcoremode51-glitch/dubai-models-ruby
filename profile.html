@@ -30,10 +30,17 @@ button{border:none;background:none;font-family:inherit;cursor:pointer;}
 ::-webkit-scrollbar-thumb{background:var(--red);}
 
 /* ── LOADER ── */
-#page-loader{position:fixed;inset:0;z-index:9999;background:var(--black);display:flex;align-items:center;justify-content:center;transition:opacity .4s;}
+#page-loader{position:fixed;inset:0;z-index:9999;background:var(--black);display:flex;align-items:center;justify-content:center;transition:opacity .5s ease;}
 #page-loader.hidden{opacity:0;pointer-events:none;}
-.loader-gem{animation:loaderPulse 1.2s ease-in-out infinite;}
-@keyframes loaderPulse{0%,100%{transform:scale(1);opacity:.7}50%{transform:scale(1.15);opacity:1}}
+.loader-inner{display:flex;flex-direction:column;align-items:center;gap:1rem;}
+.loader-gem{animation:gemSpin 1.8s ease-in-out infinite;filter:drop-shadow(0 0 18px rgba(224,32,64,.7));}
+@keyframes gemSpin{0%{transform:scale(.85) rotate(-8deg);opacity:.6;}50%{transform:scale(1.1) rotate(8deg);opacity:1;}100%{transform:scale(.85) rotate(-8deg);opacity:.6;}}
+.loader-name{font-family:var(--font-b);font-size:.85rem;font-weight:700;letter-spacing:.6em;color:rgba(255,255,255,.55);animation:loaderNameFade 1.8s ease-in-out infinite;}
+.loader-name span{color:var(--red3);margin-left:.15em;}
+@keyframes loaderNameFade{0%,100%{opacity:.4;letter-spacing:.55em;}50%{opacity:1;letter-spacing:.65em;}}
+.loader-bar{width:120px;height:2px;background:rgba(255,255,255,.08);overflow:hidden;}
+.loader-bar-fill{height:100%;width:40%;background:linear-gradient(90deg,transparent,var(--red3),transparent);animation:loaderBar 1.4s ease-in-out infinite;}
+@keyframes loaderBar{0%{transform:translateX(-150%);}100%{transform:translateX(400%);}}
 
 /* ── NAV ── */
 .nav{position:fixed;top:0;left:0;right:0;z-index:900;height:var(--nav-h);display:flex;align-items:center;padding:0 2rem;background:rgba(6,3,6,.98);border-bottom:2px solid var(--border2);box-shadow:0 2px 20px rgba(212,33,60,.12);}
@@ -309,7 +316,17 @@ button{border:none;background:none;font-family:inherit;cursor:pointer;}
 </style>
 </head>
 <body class="page-body">
-<div id="page-loader"><div class="loader-gem"><svg width="64" height="64" viewBox="0 0 54 54" fill="none"><polygon points="27,4 50,18 50,36 27,50 4,36 4,18" fill="#9b1535" stroke="#d4213c" stroke-width="1.5"/><polygon points="27,4 50,18 27,28" fill="#c41e3a" opacity=".9"/><polygon points="27,4 4,18 27,28" fill="#7a1028" opacity=".9"/><polygon points="50,18 50,36 27,28" fill="#e03050" opacity=".8"/><polygon points="4,18 4,36 27,28" fill="#6b0d20" opacity=".85"/><polygon points="50,36 27,50 27,28" fill="#b01830" opacity=".9"/><polygon points="4,36 27,50 27,28" fill="#8a1228" opacity=".9"/></svg></div></div>
+<div id="page-loader">
+  <div class="loader-inner">
+    <div class="loader-gem"><svg width="64" height="64" viewBox="0 0 54 54" fill="none"><polygon points="27,4 50,18 50,36 27,50 4,36 4,18" fill="#9b1535" stroke="#d4213c" stroke-width="1.5"/><polygon points="27,4 50,18 27,28" fill="#c41e3a" opacity=".9"/><polygon points="27,4 4,18 27,28" fill="#7a1028" opacity=".9"/><polygon points="50,18 50,36 27,28" fill="#e03050" opacity=".8"/><polygon points="4,18 4,36 27,28" fill="#6b0d20" opacity=".85"/><polygon points="50,36 27,50 27,28" fill="#b01830" opacity=".9"/><polygon points="4,36 27,50 27,28" fill="#8a1228" opacity=".9"/></svg></div>
+    <div class="loader-name">RUBY<span>AGENCY</span></div>
+    <div class="loader-bar"><div class="loader-bar-fill"></div></div>
+  </div>
+</div>
+    <div class="loader-name">RUBY<span>AGENCY</span></div>
+    <div class="loader-bar"><div class="loader-bar-fill"></div></div>
+  </div>
+</div>
 <nav class="nav">
   <div class="nav-inner">
     <a href="index.html" class="nav-logo"><svg width="28" height="28" viewBox="0 0 54 54" fill="none"><polygon points="27,4 50,18 50,36 27,50 4,36 4,18" fill="#9b1535" stroke="#d4213c" stroke-width="1.5"/><polygon points="27,4 50,18 27,28" fill="#c41e3a" opacity=".9"/><polygon points="27,4 4,18 27,28" fill="#7a1028" opacity=".9"/><polygon points="50,18 50,36 27,28" fill="#e03050" opacity=".8"/><polygon points="4,18 4,36 27,28" fill="#6b0d20" opacity=".85"/><polygon points="50,36 27,50 27,28" fill="#b01830" opacity=".9"/><polygon points="4,36 27,50 27,28" fill="#8a1228" opacity=".9"/></svg><span class="nav-logo-text">Ruby Agency</span></a>
@@ -359,11 +376,38 @@ function getConfig(){const d=localStorage.getItem(DB_CFG);return d?Object.assign
 function saveConfig(c){localStorage.setItem(DB_CFG,JSON.stringify(c));}
 
 /* Supabase */
-async function sbLoad(){return null;}
-async function sbSave(m){}
-async function sbDel(id){}
-async function sbSaveCfg(cfg){}
-async function sbLoadCfg(){return null;}
+async function sbLoad(){
+  if(!window._sb)return null;
+  try{
+    const{data,error}=await window._sb.from('models').select('*').order('position');
+    if(error||!data||!data.length)return null;
+    // parse photos if stored as string
+    return data.map(m=>{
+      if(typeof m.photos==='string'){try{m.photos=JSON.parse(m.photos);}catch(e){m.photos=[];}}
+      if(!Array.isArray(m.photos))m.photos=[];
+      return m;
+    });
+  }catch(e){return null;}
+}
+async function sbSave(m){
+  if(!window._sb)return;
+  try{
+    const row={...m,photos:JSON.stringify(m.photos||[])};
+    await window._sb.from('models').upsert(row,{onConflict:'id'});
+  }catch(e){console.warn('sbSave:',e.message);}
+}
+async function sbDel(id){
+  if(!window._sb)return;
+  try{await window._sb.from('models').delete().eq('id',id);}catch(e){}
+}
+async function sbSaveCfg(cfg){
+  if(!window._sb)return;
+  try{await window._sb.from('config').upsert({id:1,...cfg},{onConflict:'id'});}catch(e){}
+}
+async function sbLoadCfg(){
+  if(!window._sb)return null;
+  try{const{data}=await window._sb.from('config').select('*').eq('id',1).single();return data;}catch(e){return null;}
+}
 
 /* Init — Supabase first, fallback localStorage, fallback demo */
 async function initData(){
