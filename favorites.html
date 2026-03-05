@@ -10,11 +10,11 @@
 
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 :root{
-  --red:#d4213c; --red2:#b01830; --red3:#e8304a;
-  --gold:#d4a843; --gold2:#c4982a;
-  --black:#060306; --black2:#0d060a; --black3:#120810;
-  --border:rgba(212,33,60,.18); --border2:rgba(212,33,60,.28);
-  --white:#f5f0f2; --off:#c8b8be; --dim:#7a6068; --dim2:#5a4850; --text:#a89098;
+  --red:#e02040; --red2:#c01830; --red3:#ff3358;
+  --gold:#e0b840; --gold2:#d4a820;
+  --black:#060306; --black2:#100810; --black3:#180c14;
+  --border:rgba(224,32,64,.22); --border2:rgba(224,32,64,.38);
+  --white:#ffffff; --off:#e8d8de; --dim:#a88898; --dim2:#7a6070; --text:#c8a8b8;
   --wa:#25d366; --tg:#2aabee;
   --font-d:'Cormorant Garamond',serif;
   --font-s:'EB Garamond',serif;
@@ -179,13 +179,85 @@ button{border:none;background:none;font-family:inherit;cursor:pointer;}
 .fav-sub{font-family:var(--font-s);font-style:italic;font-size:.88rem;color:var(--dim);margin-top:.3rem;}
 .empty-wrap{grid-column:1/-1;display:flex;flex-direction:column;align-items:center;gap:1rem;padding:6rem 2rem;text-align:center;}
 
+
+/* ── PAGE TRANSITIONS ── */
+@keyframes pageIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.page-body{animation:pageIn .45s cubic-bezier(.4,0,.2,1) forwards;}
+/* loader pulse bigger */
+@keyframes loaderPulse{
+  0%,100%{transform:scale(.9);opacity:.5}
+  50%{transform:scale(1.2);opacity:1}
+}
+/* nav fade-in */
+@keyframes navIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+.nav{animation:navIn .35s ease forwards;}
+
+/* ── CONTRAST FIXES ── */
+.nav-links-desktop a{color:var(--off) !important;}
+.nav-links-desktop a:hover,.nav-links-desktop a.active{color:var(--white) !important;}
+.drawer-item{color:var(--off) !important;}
+.drawer-item:hover,.drawer-item.active{color:var(--white) !important;}
+.card-name{color:var(--white);text-shadow:0 2px 12px rgba(0,0,0,.95);}
+.card-tagline{color:var(--off);}
+.card-meta{color:var(--text);}
+.price-pill{color:var(--gold);border-color:rgba(224,184,64,.55);background:rgba(224,184,64,.1);}
+.btn-primary{background:var(--red);border-color:var(--red);color:#fff;font-weight:700;}
+.btn-primary:hover{background:var(--red2);}
+.btn-wa{color:#fff;background:rgba(37,211,102,.18);border-color:rgba(37,211,102,.7);}
+.btn-tg{color:#fff;background:rgba(42,171,238,.18);border-color:rgba(42,171,238,.7);}
+.filters-bar{background:rgba(6,3,6,.98);}
+.filter-btn{color:var(--off);border-color:rgba(224,32,64,.3);}
+.filter-btn:hover,.filter-btn.active{color:#fff;border-color:var(--red3);background:rgba(224,32,64,.15);}
+.models-count{color:var(--off);}
+/* profile info panel */
+.profile-name{color:var(--white);}
+.profile-tagline{color:var(--off);}
+.param-lbl{color:var(--dim);}
+.param-val{color:var(--white);}
+.bio-text{color:var(--off);}
+.pricing-title{color:var(--dim);}
+.price-dur{color:var(--gold);}
+.price-amt{color:var(--white);}
+.price-cur{color:var(--gold);}
+.back-link{color:var(--off);border-color:rgba(224,32,64,.3);}
+.back-link:hover{color:#fff;border-color:var(--red3);}
+.cta-wa{color:#fff !important;}
+.cta-tg{color:#fff !important;}
+.cta-fav{color:var(--off);}
+/* fav page */
+.fav-title{color:var(--white);}
+.fav-sub{color:var(--off);}
+/* admin */
+.panel-title{color:var(--white);}
+.form-label{color:var(--off);}
+.form-input,.form-select,.form-textarea{color:var(--white);border-color:rgba(224,32,64,.25);}
+.row-name{color:var(--white);}
+.row-meta{color:var(--off);}
+.sb-link{color:var(--off);}
+.sb-link:hover,.sb-link.active{color:var(--white);}
+.stat-num{color:var(--white);}
+.stat-lbl{color:var(--off);}
+.setting-title{color:var(--off);}
+.footer-logo-text{color:var(--white);}
+.footer-tagline{color:var(--off);}
+.footer-phone{color:var(--off);}
+.footer-legal{color:var(--dim);}
+/* scroll top */
+.scroll-top{background:var(--red);color:#fff;font-weight:700;}
+/* chips brighter */
+.chip-vip{background:rgba(30,15,5,.85);border-color:rgba(224,184,64,.9);color:#ffd740;}
+.chip-new{background:rgba(5,15,30,.85);border-color:rgba(42,171,238,.9);color:#60dfff;}
+.chip-hot{background:rgba(30,5,10,.85);border-color:var(--red3);color:#ff6080;}
+.chip-exclusive{background:rgba(20,5,35,.85);border-color:rgba(200,100,255,.9);color:#e8c0ff;}
+.avail-dot{color:#60ff90;border-color:rgba(96,255,144,.7);background:rgba(5,25,10,.85);}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 window._sb = supabase.createClient('https://devvclicyeiibmmdumrq.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRldnZjbGljeWVpaWJtbWR1bXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI0MzY5MjIsImV4cCI6MjA4ODAxMjkyMn0.hTU_otYMGmhddhuzBtN7BdKHuad7rlzcKrfB6F4hEL8');
 </script>
 </head>
-<body>
+<body class="page-body">
 <div id="page-loader"><div class="loader-gem"><svg width="64" height="64" viewBox="0 0 54 54" fill="none"><polygon points="27,4 50,18 50,36 27,50 4,36 4,18" fill="#9b1535" stroke="#d4213c" stroke-width="1.5"/><polygon points="27,4 50,18 27,28" fill="#c41e3a" opacity=".9"/><polygon points="27,4 4,18 27,28" fill="#7a1028" opacity=".9"/><polygon points="50,18 50,36 27,28" fill="#e03050" opacity=".8"/><polygon points="4,18 4,36 27,28" fill="#6b0d20" opacity=".85"/><polygon points="50,36 27,50 27,28" fill="#b01830" opacity=".9"/><polygon points="4,36 27,50 27,28" fill="#8a1228" opacity=".9"/></svg></div></div>
 <nav class="nav">
   <div class="nav-inner">
@@ -344,5 +416,24 @@ async function init(){
   render(); hideLoader();
 }
 init();
+</script>
+<script>
+// Page transition out on link click
+document.addEventListener('click', function(e){
+  const a = e.target.closest('a[href]');
+  if(!a) return;
+  const href = a.getAttribute('href');
+  if(!href || href.startsWith('#') || href.startsWith('http') || href.startsWith('tel') || a.target==='_blank') return;
+  e.preventDefault();
+  const pb = document.querySelector('.page-body');
+  if(pb){
+    pb.style.animation='none';
+    pb.style.opacity='1';
+    pb.style.transition='opacity .25s ease, transform .25s ease';
+    pb.style.transform='translateY(-8px)';
+    pb.style.opacity='0';
+  }
+  setTimeout(()=>{ location.href=href; }, 220);
+});
 </script>
 </body></html>
