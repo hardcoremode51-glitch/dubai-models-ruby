@@ -296,18 +296,7 @@ button{border:none;background:none;font-family:inherit;cursor:pointer;}
 .pw-error{font-size:.7rem;color:var(--red3);letter-spacing:.12em;min-height:1rem;margin-top:-.5rem;}
 
 
-/* ── PAGE TRANSITIONS ── */
-@keyframes pageIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
-@keyframes fadeIn{from{opacity:0}to{opacity:1}}
-.page-body{animation:pageIn .45s cubic-bezier(.4,0,.2,1) forwards;}
-/* loader pulse bigger */
-@keyframes loaderPulse{
-  0%,100%{transform:scale(.9);opacity:.5}
-  50%{transform:scale(1.2);opacity:1}
-}
-/* nav fade-in */
-@keyframes navIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
-.nav{animation:navIn .35s ease forwards;}
+
 
 /* ── CONTRAST FIXES ── */
 .nav-links-desktop a{color:var(--off) !important;}
@@ -367,6 +356,10 @@ button{border:none;background:none;font-family:inherit;cursor:pointer;}
 .chip-hot{background:rgba(30,5,10,.85);border-color:var(--red3);color:#ff6080;}
 .chip-exclusive{background:rgba(20,5,35,.85);border-color:rgba(200,100,255,.9);color:#e8c0ff;}
 .avail-dot{color:#60ff90;border-color:rgba(96,255,144,.7);background:rgba(5,25,10,.85);}
+
+/* ── PAGE ENTER ANIMATION ── */
+body{animation:pageIn .45s cubic-bezier(.4,0,.2,1) both;}
+@keyframes pageIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
@@ -539,7 +532,7 @@ function checkPw(){
   const val = document.getElementById('pw-input').value;
   const err = document.getElementById('pw-error');
   if(val === ADMIN_PW){
-    sessionStorage.setItem(PW_KEY,'1');
+    localStorage.setItem(PW_KEY,'1');
     document.getElementById('pw-screen').classList.add('hidden');
     err.textContent = '';
     init();
@@ -551,7 +544,7 @@ function checkPw(){
 }
 
 function checkAuth(){
-  if(sessionStorage.getItem(PW_KEY)==='1'){
+  if(localStorage.getItem(PW_KEY)==='1'){
     document.getElementById('pw-screen').classList.add('hidden');
     return true;
   }
@@ -918,22 +911,17 @@ async function init(){
 hideLoader();
 if(!checkAuth()){/* wait for pw */}</script>
 <script>
-// Page transition out on link click
+// Page transition out
 document.addEventListener('click', function(e){
   const a = e.target.closest('a[href]');
   if(!a) return;
   const href = a.getAttribute('href');
   if(!href || href.startsWith('#') || href.startsWith('http') || href.startsWith('tel') || a.target==='_blank') return;
   e.preventDefault();
-  const pb = document.querySelector('.page-body');
-  if(pb){
-    pb.style.animation='none';
-    pb.style.opacity='1';
-    pb.style.transition='opacity .25s ease, transform .25s ease';
-    pb.style.transform='translateY(-8px)';
-    pb.style.opacity='0';
-  }
-  setTimeout(()=>{ location.href=href; }, 220);
+  document.body.style.transition='opacity .22s ease, transform .22s ease';
+  document.body.style.opacity='0';
+  document.body.style.transform='translateY(-10px)';
+  setTimeout(()=>{ location.href=href; }, 200);
 });
 </script>
 </body></html>
