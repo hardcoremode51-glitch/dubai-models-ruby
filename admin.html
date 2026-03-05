@@ -384,7 +384,17 @@ window._sb = supabase.createClient('https://devvclicyeiibmmdumrq.supabase.co', '
     <div class="pw-error" id="pw-error"></div>
   </div>
 </div>
-<div id="page-loader"><div class="loader-gem"><svg width="64" height="64" viewBox="0 0 54 54" fill="none"><polygon points="27,4 50,18 50,36 27,50 4,36 4,18" fill="#9b1535" stroke="#d4213c" stroke-width="1.5"/><polygon points="27,4 50,18 27,28" fill="#c41e3a" opacity=".9"/><polygon points="27,4 4,18 27,28" fill="#7a1028" opacity=".9"/><polygon points="50,18 50,36 27,28" fill="#e03050" opacity=".8"/><polygon points="4,18 4,36 27,28" fill="#6b0d20" opacity=".85"/><polygon points="50,36 27,50 27,28" fill="#b01830" opacity=".9"/><polygon points="4,36 27,50 27,28" fill="#8a1228" opacity=".9"/></svg></div></div>
+<div id="page-loader">
+  <div class="loader-inner">
+    <div class="loader-gem"><svg width="64" height="64" viewBox="0 0 54 54" fill="none"><polygon points="27,4 50,18 50,36 27,50 4,36 4,18" fill="#9b1535" stroke="#d4213c" stroke-width="1.5"/><polygon points="27,4 50,18 27,28" fill="#c41e3a" opacity=".9"/><polygon points="27,4 4,18 27,28" fill="#7a1028" opacity=".9"/><polygon points="50,18 50,36 27,28" fill="#e03050" opacity=".8"/><polygon points="4,18 4,36 27,28" fill="#6b0d20" opacity=".85"/><polygon points="50,36 27,50 27,28" fill="#b01830" opacity=".9"/><polygon points="4,36 27,50 27,28" fill="#8a1228" opacity=".9"/></svg></div>
+    <div class="loader-name">RUBY<span>AGENCY</span></div>
+    <div class="loader-bar"><div class="loader-bar-fill"></div></div>
+  </div>
+</div>
+    <div class="loader-name">RUBY<span>AGENCY</span></div>
+    <div class="loader-bar"><div class="loader-bar-fill"></div></div>
+  </div>
+</div>
 <nav class="nav">
   <div class="nav-inner">
     <a href="index.html" class="nav-logo"><svg width="28" height="28" viewBox="0 0 54 54" fill="none"><polygon points="27,4 50,18 50,36 27,50 4,36 4,18" fill="#9b1535" stroke="#d4213c" stroke-width="1.5"/><polygon points="27,4 50,18 27,28" fill="#c41e3a" opacity=".9"/><polygon points="27,4 4,18 27,28" fill="#7a1028" opacity=".9"/><polygon points="50,18 50,36 27,28" fill="#e03050" opacity=".8"/><polygon points="4,18 4,36 27,28" fill="#6b0d20" opacity=".85"/><polygon points="50,36 27,50 27,28" fill="#b01830" opacity=".9"/><polygon points="4,36 27,50 27,28" fill="#8a1228" opacity=".9"/></svg><span class="nav-logo-text">Ruby Agency</span></a>
@@ -573,8 +583,15 @@ function saveConfig(c){localStorage.setItem(DB_CFG,JSON.stringify(c));}
 /* Supabase */
 async function sbLoad(){
   if(!window._sb)return null;
-  try{const{data,error}=await window._sb.from('models').select('*').order('position');
-  if(error||!data||!data.length)return null;return data;}catch(e){return null;}
+  try{
+    const{data,error}=await window._sb.from('models').select('*').order('position');
+    if(error||!data||!data.length)return null;
+    return data.map(m=>{
+      if(typeof m.photos==='string'){try{m.photos=JSON.parse(m.photos);}catch(e){m.photos=[];}}
+      if(!Array.isArray(m.photos))m.photos=[];
+      return m;
+    });
+  }catch(e){return null;}
 }
 async function sbSave(m){
   if(!window._sb)return;
@@ -639,18 +656,35 @@ function addThumb(src, container){
   return wrap;
 }
 
+let _dragThumb=null;
 function initThumbDrag(){
   const thumbs=document.getElementById('upload-thumbs');
-  let dragEl=null;
-  thumbs.querySelectorAll('.thumb-wrap').forEach(el=>{
-    el.addEventListener('dragstart',()=>{dragEl=el;el.classList.add('dragging-thumb');});
-    el.addEventListener('dragend',()=>{el.classList.remove('dragging-thumb');dragEl=null;});
-    el.addEventListener('dragover',e=>{e.preventDefault();el.classList.add('drag-over-thumb');});
-    el.addEventListener('dragleave',()=>el.classList.remove('drag-over-thumb'));
-    el.addEventListener('drop',e=>{
-      e.preventDefault();el.classList.remove('drag-over-thumb');
-      if(dragEl&&dragEl!==el){thumbs.insertBefore(dragEl,el);}
-    });
+  if(!thumbs||thumbs._dragInit)return;
+  thumbs._dragInit=true;
+  thumbs.addEventListener('dragstart',e=>{
+    const w=e.target.closest('.thumb-wrap');
+    if(!w)return;
+    _dragThumb=w;
+    setTimeout(()=>w.classList.add('dragging-thumb'),0);
+  });
+  thumbs.addEventListener('dragend',e=>{
+    const w=e.target.closest('.thumb-wrap');
+    if(w)w.classList.remove('dragging-thumb');
+    thumbs.querySelectorAll('.thumb-wrap').forEach(t=>t.classList.remove('drag-over-thumb'));
+    _dragThumb=null;
+  });
+  thumbs.addEventListener('dragover',e=>{
+    e.preventDefault();
+    const w=e.target.closest('.thumb-wrap');
+    thumbs.querySelectorAll('.thumb-wrap').forEach(t=>t.classList.remove('drag-over-thumb'));
+    if(w&&w!==_dragThumb)w.classList.add('drag-over-thumb');
+  });
+  thumbs.addEventListener('drop',e=>{
+    e.preventDefault();
+    const w=e.target.closest('.thumb-wrap');
+    thumbs.querySelectorAll('.thumb-wrap').forEach(t=>t.classList.remove('drag-over-thumb'));
+    if(_dragThumb&&w&&w!==_dragThumb)thumbs.insertBefore(_dragThumb,w);
+    _dragThumb=null;
   });
 }
 
