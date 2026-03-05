@@ -122,9 +122,9 @@ button{border:none;background:none;font-family:inherit;cursor:pointer;}
 @media(max-width:680px) {.models-grid{grid-template-columns:repeat(2,1fr);}}
 @media(max-width:380px) {.models-grid{grid-template-columns:1fr;}}
 
-.model-card{position:relative;overflow:hidden;aspect-ratio:3/4;cursor:pointer;background:var(--black3);}
-.card-bg{position:absolute;inset:0;background-size:cover;background-position:center top;transition:transform .6s ease;}
-.model-card:hover .card-bg{transform:scale(1.06);}
+.model-card{position:relative;overflow:hidden;aspect-ratio:9/16;cursor:pointer;background:var(--black3);}
+.card-bg{position:absolute;inset:0;overflow:hidden;}.card-bg img{width:100%;height:100%;object-fit:cover;object-position:center top;display:block;transition:transform .55s ease;pointer-events:none;}
+.model-card:hover .card-bg img{transform:scale(1.06);}
 .card-ph{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(155deg,#200810 0%,#3a0f1e 55%,#120408 100%);}
 .card-ph svg{opacity:.12;}
 .card-vignette{position:absolute;inset:0;background:linear-gradient(0deg,rgba(6,3,6,.97) 0%,rgba(6,3,6,.5) 38%,rgba(6,3,6,.05) 70%,transparent 100%);}
@@ -180,18 +180,7 @@ button{border:none;background:none;font-family:inherit;cursor:pointer;}
 .empty-wrap{grid-column:1/-1;display:flex;flex-direction:column;align-items:center;gap:1rem;padding:6rem 2rem;text-align:center;}
 
 
-/* ── PAGE TRANSITIONS ── */
-@keyframes pageIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
-@keyframes fadeIn{from{opacity:0}to{opacity:1}}
-.page-body{animation:pageIn .45s cubic-bezier(.4,0,.2,1) forwards;}
-/* loader pulse bigger */
-@keyframes loaderPulse{
-  0%,100%{transform:scale(.9);opacity:.5}
-  50%{transform:scale(1.2);opacity:1}
-}
-/* nav fade-in */
-@keyframes navIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
-.nav{animation:navIn .35s ease forwards;}
+
 
 /* ── CONTRAST FIXES ── */
 .nav-links-desktop a{color:var(--off) !important;}
@@ -251,6 +240,10 @@ button{border:none;background:none;font-family:inherit;cursor:pointer;}
 .chip-hot{background:rgba(30,5,10,.85);border-color:var(--red3);color:#ff6080;}
 .chip-exclusive{background:rgba(20,5,35,.85);border-color:rgba(200,100,255,.9);color:#e8c0ff;}
 .avail-dot{color:#60ff90;border-color:rgba(96,255,144,.7);background:rgba(5,25,10,.85);}
+
+/* ── PAGE ENTER ANIMATION ── */
+body{animation:pageIn .45s cubic-bezier(.4,0,.2,1) both;}
+@keyframes pageIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
@@ -408,13 +401,13 @@ function render(){
     return;
   }
   grid.innerHTML=favMs.map(m=>{
-    const bg=m.photos&&m.photos[0]?`background-image:url('${m.photos[0]}')`:'';
+    const bgImg=m.photos&&m.photos[0]?`<img src="${m.photos[0]}" alt="${m.name}" loading="lazy">`:''
     const tag=m.tag?`<span class="chip chip-${m.tag}">${m.tag.toUpperCase()}</span>`:'';
     const avail=m.available?'<span class="avail-dot">Available</span>':'';
     const waNum=(m.wa||cfg.wa).replace(/[^0-9]/g,'');
     const tgUser=(m.tg||cfg.tg).replace('@','');
     return `<div class="model-card" onclick="location.href='profile.html?id=${m.id}'">
-      <div class="card-bg" style="${bg}"></div>
+      <div class="card-bg">${bgImg}</div>
       <div class="card-ph"><svg width="80" height="80" viewBox="0 0 24 24" fill="white" opacity=".12"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg></div>
       <div class="card-vignette"></div>
       <div class="card-top">
@@ -455,22 +448,17 @@ async function init(){
 init();
 </script>
 <script>
-// Page transition out on link click
+// Page transition out
 document.addEventListener('click', function(e){
   const a = e.target.closest('a[href]');
   if(!a) return;
   const href = a.getAttribute('href');
   if(!href || href.startsWith('#') || href.startsWith('http') || href.startsWith('tel') || a.target==='_blank') return;
   e.preventDefault();
-  const pb = document.querySelector('.page-body');
-  if(pb){
-    pb.style.animation='none';
-    pb.style.opacity='1';
-    pb.style.transition='opacity .25s ease, transform .25s ease';
-    pb.style.transform='translateY(-8px)';
-    pb.style.opacity='0';
-  }
-  setTimeout(()=>{ location.href=href; }, 220);
+  document.body.style.transition='opacity .22s ease, transform .22s ease';
+  document.body.style.opacity='0';
+  document.body.style.transform='translateY(-10px)';
+  setTimeout(()=>{ location.href=href; }, 200);
 });
 </script>
 </body></html>
