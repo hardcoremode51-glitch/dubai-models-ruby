@@ -230,8 +230,20 @@ button{border:none;background:none;font-family:inherit;cursor:pointer;}
 .upload-zone:hover{border-color:var(--red3);}
 .upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
 .upload-zone-text{font-size:.7rem;color:var(--dim);letter-spacing:.12em;}
-.upload-thumbs{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.6rem;}
-.upload-thumb{width:52px;height:68px;object-fit:cover;border:2px solid var(--border);}
+.upload-thumbs{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:.7rem;}
+.thumb-wrap{position:relative;flex-shrink:0;cursor:grab;user-select:none;}
+.thumb-wrap:active{cursor:grabbing;}
+.thumb-wrap.drag-over-thumb{outline:2px dashed var(--red3);outline-offset:2px;}
+.upload-thumb{width:60px;height:80px;object-fit:cover;border:2px solid var(--border);display:block;pointer-events:none;}
+.thumb-del{
+  position:absolute;top:-6px;right:-6px;
+  width:18px;height:18px;border-radius:50%;
+  background:var(--red);color:#fff;
+  font-size:.65rem;line-height:18px;text-align:center;
+  cursor:pointer;border:1.5px solid var(--black);
+  font-weight:700;z-index:2;
+}
+.thumb-wrap.dragging-thumb{opacity:.3;border:2px dashed var(--red3);}
 /* settings */
 .settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
 @media(max-width:640px){.settings-grid{grid-template-columns:1fr;}}
@@ -541,22 +553,45 @@ function showToast(msg){
   setTimeout(()=>t.classList.remove('show'),2200);
 }
 
+function addThumb(src, container){
+  const wrap=document.createElement('div');
+  wrap.className='thumb-wrap';
+  wrap.draggable=true;
+  const img=document.createElement('img');
+  img.src=src; img.className='upload-thumb';
+  const del=document.createElement('button');
+  del.className='thumb-del'; del.textContent='✕';
+  del.onclick=e=>{e.stopPropagation();wrap.remove();};
+  wrap.appendChild(img); wrap.appendChild(del);
+  container.appendChild(wrap);
+  return wrap;
+}
+
+function initThumbDrag(){
+  const thumbs=document.getElementById('upload-thumbs');
+  let dragEl=null;
+  thumbs.querySelectorAll('.thumb-wrap').forEach(el=>{
+    el.addEventListener('dragstart',()=>{dragEl=el;el.classList.add('dragging-thumb');});
+    el.addEventListener('dragend',()=>{el.classList.remove('dragging-thumb');dragEl=null;});
+    el.addEventListener('dragover',e=>{e.preventDefault();el.classList.add('drag-over-thumb');});
+    el.addEventListener('dragleave',()=>el.classList.remove('drag-over-thumb'));
+    el.addEventListener('drop',e=>{
+      e.preventDefault();el.classList.remove('drag-over-thumb');
+      if(dragEl&&dragEl!==el){thumbs.insertBefore(dragEl,el);}
+    });
+  });
+}
+
 async function previewPhotos(input){
   const thumbs=document.getElementById('upload-thumbs');
-  const uploadZoneText=input.closest('.upload-zone').querySelector('.upload-zone-text');
+  const zoneText=input.closest('.upload-zone').querySelector('.upload-zone-text');
   const files=Array.from(input.files);
   if(!files.length)return;
-
-  uploadZoneText.textContent='Uploading...';
-
+  zoneText.textContent='Uploading...';
   for(const file of files){
-    // show local preview immediately
     const localUrl=URL.createObjectURL(file);
-    const img=document.createElement('img');
-    img.src=localUrl; img.className='upload-thumb'; img.dataset.local='1';
-    thumbs.appendChild(img);
-
-    // upload to Supabase Storage
+    const wrap=addThumb(localUrl,thumbs);
+    const img=wrap.querySelector('img');
     if(window._sb){
       const ext=file.name.split('.').pop();
       const path=`photos/${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`;
@@ -564,22 +599,15 @@ async function previewPhotos(input){
       if(!error){
         const{data:urlData}=window._sb.storage.from('media').getPublicUrl(path);
         img.src=urlData.publicUrl;
-        img.removeAttribute('data-local');
       } else {
-        console.warn('Upload error:',error.message);
-        // keep base64 fallback
-        const r2=new FileReader();
-        r2.onload=e2=>{img.src=e2.target.result;};
-        r2.readAsDataURL(file);
+        const r2=new FileReader();r2.onload=e2=>{img.src=e2.target.result;};r2.readAsDataURL(file);
       }
     } else {
-      // no supabase — fallback to base64
-      const r2=new FileReader();
-      r2.onload=e2=>{img.src=e2.target.result;};
-      r2.readAsDataURL(file);
+      const r2=new FileReader();r2.onload=e2=>{img.src=e2.target.result;};r2.readAsDataURL(file);
     }
+    initThumbDrag();
   }
-  uploadZoneText.textContent='📷 Click to upload more photos';
+  zoneText.textContent='📷 Click to upload more photos';
 }
 
 async function previewVideo(input){
@@ -611,7 +639,7 @@ async function saveModel(){
   const name=document.getElementById('f-name').value.trim();
   if(!name){alert('Name is required');return;}
   const editId=document.getElementById('edit-id').value;
-  const photos=[...document.querySelectorAll('#upload-thumbs .upload-thumb')].map(img=>img.src);
+  const photos=[...document.querySelectorAll('#upload-thumbs .thumb-wrap img')].map(img=>img.src);
   const m={
     id:editId?parseInt(editId):Date.now(),
     name,age:parseInt(document.getElementById('f-age').value)||22,
@@ -668,7 +696,8 @@ function editModel(id){
   document.getElementById('f-wa').value=m.wa||'';
   document.getElementById('f-tg').value=m.tg||'';
   const thumbs=document.getElementById('upload-thumbs');thumbs.innerHTML='';
-  (m.photos||[]).forEach(src=>{const img=document.createElement('img');img.src=src;img.className='upload-thumb';thumbs.appendChild(img);});
+  (m.photos||[]).forEach(src=>{addThumb(src,thumbs);});
+  initThumbDrag();
   const ft=document.getElementById('form-title');if(ft)ft.innerHTML='Edit <span>Model</span>';
   switchPanel('add',document.querySelectorAll('.sb-link')[1]);
 }
